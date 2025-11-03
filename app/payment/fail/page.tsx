@@ -30,7 +30,8 @@ interface PaymentFailProps {
   }>;
 }
 
-function PaymentFailContent({ searchParams }: PaymentFailProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function PaymentFailContent({ searchParams: _searchParams }: PaymentFailProps) {
   // TODO: 에러 정보를 표시하거나 로깅할 수 있음
 
   return (

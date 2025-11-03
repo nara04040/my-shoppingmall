@@ -78,7 +78,22 @@ export async function getCartItems(
   return data
     .filter((item) => item.products !== null) // 비활성화되거나 삭제된 상품 제외
     .map((item) => {
-      const product = item.products as Product;
+      // Supabase JOIN 결과가 배열로 추론될 수 있으므로 타입 안전하게 변환
+      // Supabase DECIMAL은 문자열로 반환되므로 먼저 처리 후 Product 타입으로 변환
+      const rawProduct = Array.isArray(item.products) 
+        ? item.products[0] 
+        : item.products;
+      
+      // price를 문자열로 확실히 처리 (Supabase DECIMAL 반환값)
+      const productPrice = typeof rawProduct.price === 'string' 
+        ? rawProduct.price 
+        : String(rawProduct.price);
+      
+      const product = {
+        ...rawProduct,
+        price: parseFloat(productPrice),
+      } as Product;
+      
       return {
         id: item.id,
         clerk_id: item.clerk_id,
@@ -86,10 +101,7 @@ export async function getCartItems(
         quantity: item.quantity,
         created_at: item.created_at,
         updated_at: item.updated_at,
-        product: {
-          ...product,
-          price: parseFloat(product.price),
-        },
+        product,
       };
     });
 }
@@ -252,7 +264,10 @@ export async function updateCartItemQuantity(
     throw new Error('장바구니 아이템을 찾을 수 없습니다.');
   }
 
-  const product = cartItem.products as { stock_quantity: number; is_active: boolean } | null;
+  // Supabase JOIN 결과가 배열로 추론될 수 있으므로 타입 안전하게 변환
+  const product = (Array.isArray(cartItem.products)
+    ? cartItem.products[0]
+    : cartItem.products) as { stock_quantity: number; is_active: boolean } | null;
 
   if (!product || !product.is_active) {
     throw new Error('상품이 비활성화되었습니다.');

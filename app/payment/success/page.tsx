@@ -29,7 +29,8 @@ interface PaymentSuccessProps {
   }>;
 }
 
-function PaymentSuccessContent({ searchParams }: PaymentSuccessProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function PaymentSuccessContent({ searchParams: _searchParams }: PaymentSuccessProps) {
   // TODO: 여기에 결제 승인 및 주문 상태 업데이트 로직 구현
   // 1. paymentKey, orderId, amount 추출
   // 2. 서버에서 결제 승인 API 호출

@@ -22,7 +22,7 @@ import { useCartCount } from '@/hooks/use-cart-count';
  * - lucide-react: ShoppingCart 아이콘
  */
 function Navbar() {
-  const { cartCount, isLoading: isLoadingCart } = useCartCount();
+  const { cartCount } = useCartCount();
 
   return (
     <header className="flex justify-between items-center p-4 gap-4 h-16 max-w-7xl mx-auto">

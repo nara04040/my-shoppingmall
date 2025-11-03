@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loadTossPayments } from '@tosspayments/payment-sdk';
@@ -64,7 +63,6 @@ interface OrderFormProps {
 }
 
 export function OrderForm({ expectedTotalAmount, cartItems }: OrderFormProps) {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<OrderFormData>({

@@ -86,6 +86,7 @@ export async function getPopularProducts(limit: number = 6): Promise<Product[]> 
         }))
         .sort((a, b) => (b._salesCount || 0) - (a._salesCount || 0))
         .slice(0, limit)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .map(({ _salesCount, ...product }) => product); // 판매량 제거
     }
   }
@@ -347,6 +348,7 @@ async function getProductsWithPaginationByPopularity(
           };
         })
         .sort((a, b) => (b._salesCount || 0) - (a._salesCount || 0))
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .map(({ _salesCount, ...product }) => product);
     }
   }

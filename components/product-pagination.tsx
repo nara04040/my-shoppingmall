@@ -57,8 +57,8 @@ export function ProductPagination({ currentPage, totalPages }: ProductPagination
       }
     } else {
       // 현재 페이지 주변만 표시
-      let startPage = Math.max(1, currentPage - 2);
-      let endPage = Math.min(totalPages, currentPage + 2);
+      const startPage = Math.max(1, currentPage - 2);
+      const endPage = Math.min(totalPages, currentPage + 2);
 
       // 시작 페이지가 1보다 크면 1과 ellipsis 추가
       if (startPage > 1) {

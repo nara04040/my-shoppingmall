@@ -9,7 +9,7 @@
 - [ ] Phase 2: 상품 기능
   - [ ] 홈페이지 
     - [x] 상품 목록 (grid 레이아웃)
-    - [ ] 카테고리 필터링 (electronics, clothing, books, food, sports, beauty, home)
+    - [x] 카테고리 필터링 (electronics, clothing, books, food, sports, beauty, home)
     - [ ] 인기상품 섹션 (판매량 기반 또는 관리자 지정)
   - [ ] 상품 목록 페이지: 페이지네이션/정렬/카테고리 필터
   - [ ] 상품 상세 페이지: 재고/가격/설명 표시

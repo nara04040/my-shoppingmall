@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +29,7 @@ export type Category = 'all' | 'electronics' | 'clothing' | 'books' | 'food' | '
 
 interface CategoryFilterProps {
   onCategoryChange: (category: Category) => void;
+  initialCategory?: Category;
 }
 
 const CATEGORIES: Array<{ value: Category; label: string }> = [
@@ -42,8 +43,13 @@ const CATEGORIES: Array<{ value: Category; label: string }> = [
   { value: 'home', label: '생활/가정' },
 ];
 
-export function CategoryFilter({ onCategoryChange }: CategoryFilterProps) {
-  const [selectedCategory, setSelectedCategory] = useState<Category>('all');
+export function CategoryFilter({ onCategoryChange, initialCategory = 'all' }: CategoryFilterProps) {
+  const [selectedCategory, setSelectedCategory] = useState<Category>(initialCategory);
+
+  // initialCategory가 변경되면 내부 상태도 업데이트
+  useEffect(() => {
+    setSelectedCategory(initialCategory);
+  }, [initialCategory]);
 
   const handleCategoryClick = (category: Category) => {
     setSelectedCategory(category);

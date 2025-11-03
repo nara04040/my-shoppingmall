@@ -12,6 +12,29 @@
     - [x] 카테고리 필터링 (electronics, clothing, books, food, sports, beauty, home)
     - [x] 인기상품 섹션 (판매량 기반 또는 관리자 지정)
   - [ ] 상품 목록 페이지: 페이지네이션/정렬/카테고리 필터
+    - [x] 라우트 및 페이지 구조 (`app/products/page.tsx`)
+    - [x] URL 쿼리 파라미터 관리 (category, page, sort, limit) - 기본 구조 완료
+    - [ ] 서버 사이드 페이지네이션 쿼리 함수 작성 (`lib/supabase/queries/products.ts`)
+      - `getProductsWithPagination(category, page, limit, sortBy)` 함수 추가
+      - 정렬 옵션: 최신순(created_at), 가격순(price), 판매량순(sales_count)
+      - 카테고리 필터링 지원
+      - 총 상품 수(count) 반환
+    - [ ] 정렬 UI 컴포넌트 (`components/product-sort.tsx`)
+      - 드롭다운 또는 버튼 그룹으로 정렬 옵션 제공
+      - 정렬 옵션: 최신순, 가격 낮은순, 가격 높은순, 인기순
+    - [ ] 페이지네이션 컴포넌트 (`components/product-pagination.tsx`)
+      - 이전/다음 버튼
+      - 페이지 번호 표시 (현재 페이지 중심)
+      - 총 페이지 수 계산 및 표시
+    - [ ] 상품 목록 페이지 UI 구성
+      - CategoryFilter 컴포넌트 재사용
+      - ProductSort 컴포넌트 배치
+      - ProductList 또는 새로운 ProductGrid 컴포넌트로 상품 표시
+      - ProductPagination 컴포넌트 하단 배치
+    - [ ] 로딩/에러/빈 상태 처리
+      - 로딩 스켈레톤 UI
+      - 에러 메시지 표시
+      - 검색 결과 없음 상태 메시지
   - [ ] 상품 상세 페이지: 재고/가격/설명 표시
   - [ ] 어드민 상품 등록은 대시보드에서 수기 관리(문서화만)
 

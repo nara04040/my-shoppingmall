@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
+import { createClerkSupabaseClient } from '@/lib/supabase/server';
 import type { Product } from '@/types/product';
 
 export async function getActiveProducts(): Promise<Product[]> {
@@ -119,5 +120,28 @@ export async function getPopularProducts(limit: number = 6): Promise<Product[]> 
   }
 
   return popularProducts;
+}
+
+/**
+ * 서버 컴포넌트용 활성 상품 조회
+ * 
+ * 페이지네이션, 정렬, 카테고리 필터 기능은 추후 getProductsWithPagination에서 구현 예정
+ */
+export async function getActiveProductsServer(): Promise<Product[]> {
+  const supabase = createClerkSupabaseClient();
+  
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  
+  // Supabase는 DECIMAL 타입을 문자열로 반환하므로 숫자로 변환
+  return (data || []).map(product => ({
+    ...product,
+    price: parseFloat(product.price),
+  }));
 }
 

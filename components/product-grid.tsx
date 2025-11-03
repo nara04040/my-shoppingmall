@@ -3,6 +3,8 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/product-card';
 import { CategoryFilter, type Category } from '@/components/category-filter';
+import { EmptyState } from '@/components/empty-state';
+import { Package, Inbox } from 'lucide-react';
 import type { Product } from '@/types/product';
 
 /**
@@ -73,11 +75,33 @@ export function ProductGrid({ products, initialCategory }: ProductGridProps) {
       />
 
       {products.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          {currentCategory === 'all' || currentCategory === null
-            ? '등록된 상품이 없습니다.'
-            : '해당 카테고리의 상품이 없습니다.'}
-        </div>
+        <EmptyState
+          icon={
+            currentCategory === 'all' || currentCategory === null ? (
+              <Package className="size-16" />
+            ) : (
+              <Inbox className="size-16" />
+            )
+          }
+          title={
+            currentCategory === 'all' || currentCategory === null
+              ? '등록된 상품이 없습니다'
+              : '해당 카테고리의 상품이 없습니다'
+          }
+          description={
+            currentCategory === 'all' || currentCategory === null
+              ? '새로운 상품이 곧 등록될 예정입니다.'
+              : '다른 카테고리의 상품을 확인해보세요.'
+          }
+          action={
+            currentCategory === 'all' || currentCategory === null
+              ? undefined
+              : {
+                  label: '전체 상품 보기',
+                  href: '/products',
+                }
+          }
+        />
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (

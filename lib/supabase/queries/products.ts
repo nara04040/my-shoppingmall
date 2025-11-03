@@ -417,3 +417,45 @@ async function getProductsWithPaginationByPopularity(
   };
 }
 
+/**
+ * 상품 ID로 단건 조회 (서버 컴포넌트용)
+ * 
+ * @param id - 상품 UUID
+ * @returns 상품 정보 또는 null (없거나 비활성화된 경우)
+ */
+export async function getProductById(id: string): Promise<Product | null> {
+  const supabase = createClerkSupabaseClient();
+  
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .eq('is_active', true)
+    .single();
+
+  // 데이터베이스 에러는 상위로 전파
+  if (error) {
+    // 상품이 없는 경우 (PGRST116)는 null 반환
+    if (error.code === 'PGRST116') {
+      return null;
+    }
+    throw error;
+  }
+
+  // 데이터가 없는 경우
+  if (!data) {
+    return null;
+  }
+
+  // price 필드를 숫자로 변환
+  const parsedPrice = parseFloat(data.price);
+  if (isNaN(parsedPrice)) {
+    console.warn(`상품 ${data.id}의 가격이 유효하지 않습니다: ${data.price}`);
+  }
+
+  return {
+    ...data,
+    price: isNaN(parsedPrice) ? 0 : parsedPrice,
+  };
+}
+

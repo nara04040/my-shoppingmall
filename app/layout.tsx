@@ -5,6 +5,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import Navbar from "@/components/Navbar";
 import { SyncUserProvider } from "@/components/providers/sync-user-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { Toaster } from "@/components/toaster";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,10 +35,13 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <SyncUserProvider>
-            <Navbar />
-            {children}
-          </SyncUserProvider>
+          <QueryProvider>
+            <SyncUserProvider>
+              <Navbar />
+              {children}
+              <Toaster />
+            </SyncUserProvider>
+          </QueryProvider>
         </body>
       </html>
     </ClerkProvider>

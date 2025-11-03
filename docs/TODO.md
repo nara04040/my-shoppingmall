@@ -58,14 +58,158 @@
   - [ ] 어드민 상품 등록은 대시보드에서 수기 관리(문서화만)
 
 - [ ] Phase 3: 장바구니 & 주문
-  - [ ] 장바구니 담기/삭제/수량 변경 (`cart_items` 연동)
-  - [ ] 주문 생성 흐름(주소/메모 입력 포함)
-  - [ ] 주문테이블 저장(`orders`, `order_items`) 및 합계 검증
+  - [x] 3.1 데이터 레이어 (Backend)
+    - [x] 타입 정의 (`types/cart.ts` 신규 생성)
+      - [x] `CartItem` 타입 정의 (id, clerk_id, product_id, quantity, created_at, updated_at)
+      - [x] `CartItemWithProduct` 타입 정의 (CartItem + Product 정보 JOIN 결과)
+      - [x] `CartSummary` 타입 정의 (총 아이템 수, 총 금액 등 장바구니 요약 정보)
+    - [x] Supabase 쿼리 함수 (`lib/supabase/queries/cart.ts` 신규 생성)
+      - [x] `getCartItems(clerkId)`: 현재 사용자 장바구니 전체 조회 (상품 정보 JOIN)
+      - [x] `addToCart(clerkId, productId, quantity)`: 장바구니 추가 (UPSERT 로직, 재고 검증 포함)
+      - [x] `updateCartItemQuantity(cartItemId, quantity)`: 수량 변경 (최소 1, 최대 재고 수량 검증)
+      - [x] `removeCartItem(cartItemId)`: 장바구니에서 삭제
+      - [x] `clearCart(clerkId)`: 전체 비우기
+      - [x] `getCartItemCount(clerkId)`: 장바구니 아이템 총 개수 (GNB 배지용)
+      - [x] `getCartSummary(clerkId)`: 장바구니 요약 정보 계산 (추가 구현)
+  - [x] 3.2 Server Actions (`actions/cart.ts` 신규 생성)
+    - [x] `addToCartAction(productId, quantity)`: 장바구니 추가 (Clerk 세션 확인, clerk_id 추출)
+    - [x] `updateCartItemAction(cartItemId, quantity)`: 수량 변경
+    - [x] `removeCartItemAction(cartItemId)`: 삭제
+    - [x] `clearCartAction()`: 전체 비우기
+    - [x] 모든 Action에서 에러 처리 및 반환
+    - [x] 일관된 반환 형식 구현 (`ActionResult<T>` 타입 사용)
+    - [x] 입력값 검증 (productId, quantity 등)
+  - [x] 3.3 GNB 장바구니 UI (`components/Navbar.tsx` 수정)
+    - [x] 장바구니 아이콘 추가 (lucide-react `ShoppingCart`, 로그인/회원가입 버튼 왼쪽)
+    - [x] 실시간 배지: 장바구니 아이템 총 개수 표시
+    - [x] 클릭 시 `/cart`로 이동
+    - [x] 비로그인 시: 아이콘 숨김 또는 비활성화 처리
+    - [x] `getCartItemCountAction()` Server Action 추가
+    - [x] 주기적 갱신 (30초마다 자동 갱신)
+  - [x] 3.4 상품 상세 페이지 장바구니 기능 (`components/product-detail-cart.tsx` 수정)
+    - [x] `handleAddToCart` 구현
+      - [x] 로그인 상태 확인 (비로그인 시 alert 표시)
+      - [x] 재고 검증 (수량 > 재고 수량 시 에러)
+      - [x] Server Action 호출하여 장바구니에 추가
+      - [x] 성공 시 Dialog 표시
+      - [x] 실패 시 에러 메시지 표시 (alert 사용)
+    - [x] 로딩 상태 표시 (버튼 disabled, "담는 중..." 텍스트)
+    - [x] Dialog 컴포넌트 인라인 구현 (상품명, 수량, 총액 표시)
+    - [x] Dialog 내 "장바구니로 이동", "쇼핑 계속하기" 버튼 구현
+  - [x] 3.5 장바구니 담기 Dialog (`components/cart-add-dialog.tsx` 신규 생성)
+    - [x] 장바구니 담기 후 표시되는 확인 Dialog
+    - [x] "장바구니로 이동" 버튼 → `/cart`로 리다이렉트
+    - [x] "쇼핑 계속하기" 버튼 → Dialog 닫기만 (현재 페이지 유지)
+    - [x] 상품명, 수량, 총액 표시
+    - [x] Props 인터페이스 정의 (open, onOpenChange, productName, quantity, totalAmount)
+    - [x] 재사용 가능한 컴포넌트로 설계
+  - [x] 3.6 장바구니 페이지 (`app/cart/page.tsx` 신규 생성)
+    - [x] Server Component로 구현
+    - [x] 비로그인 사용자 접근 시 로그인 페이지로 리다이렉트
+    - [x] 상단: "장바구니" 제목
+    - [x] 본문: 장바구니 아이템 목록 (간단 버전, 3.7에서 컴포넌트화 예정)
+    - [x] 빈 상태: "장바구니가 비어있습니다" 메시지 + 쇼핑 계속하기 버튼
+    - [x] 로딩 스켈레톤 UI (`app/cart/loading.tsx`)
+    - [x] 에러 처리 (조회 실패 시 빈 배열로 처리)
+  - [x] 3.7 장바구니 아이템 컴포넌트 (`components/cart-item.tsx` 신규 생성)
+    - [x] 상품 정보 표시 (이미지, 이름, 가격)
+    - [x] 수량 조절 UI (+/- 버튼, 숫자 입력)
+    - [x] 아이템 삭제 버튼
+    - [x] 아이템별 총액 (가격 × 수량)
+    - [x] 재고 부족 경고 표시 (수량 > 재고 수량)
+    - [x] 수량 변경 시 로딩 상태 표시
+    - [x] 수량 변경 자동 업데이트 (500ms debounce)
+    - [x] 삭제 확인 다이얼로그 (confirm)
+    - [x] 반응형 레이아웃 (모바일/데스크톱)
+  - [x] 3.8 장바구니 요약 컴포넌트 (`components/cart-summary.tsx` 신규 생성)
+    - [x] 총 상품 금액
+    - [x] 배송비 (추후 확장 가능, 현재는 0원 또는 고정값)
+    - [x] 총 주문 금액
+    - [x] 주문하기 버튼 (Phase 3.2에서 구현 예정, 현재는 placeholder)
+    - [x] 카드 형태 레이아웃
+    - [x] 반응형 디자인 및 다크 모드 지원
+  - [x] 3.9 실시간 상태 관리
+    - [x] React Query 설치 및 QueryClientProvider 설정
+    - [x] 장바구니 아이템 수 관리 (`hooks/use-cart-count.ts` 신규 생성)
+      - [x] React Query로 장바구니 개수 캐싱
+      - [x] GNB 배지 업데이트용
+      - [x] 장바구니 변경 시 자동 리프레시
+    - [x] 장바구니 Mutation 훅 생성 (`hooks/use-cart-mutations.ts` 신규 생성)
+      - [x] `useAddToCart`: 장바구니 추가 및 쿼리 무효화
+      - [x] `useUpdateCartItem`: 수량 변경 및 쿼리 무효화
+      - [x] `useRemoveCartItem`: 아이템 삭제 및 쿼리 무효화
+      - [x] `useClearCart`: 장바구니 비우기 및 쿼리 무효화
+    - [x] Navbar 리팩토링 (`useCartCount` 훅 사용)
+    - [x] 상품 상세 페이지 장바구니 추가 기능 업데이트 (쿼리 무효화)
+    - [x] 장바구니 아이템 컴포넌트 업데이트 (수량 변경/삭제 시 쿼리 무효화)
+  - [x] 3.10 에러 처리 및 검증
+    - [x] 재고 수량 검증 (장바구니 추가/수량 변경 시) - 서버/클라이언트 양쪽 구현
+    - [x] 최소/최대 수량 검증 (1 이상, 재고 이하) - 이미 구현됨
+    - [x] 로그인 상태 확인 (모든 장바구니 작업) - Server Actions에서 처리
+    - [x] 상품 활성화 상태 확인 (`is_active = true`) - 이미 구현됨
+    - [x] 에러 상황 처리
+      - [x] 재고 부족: Toast 메시지 표시 (최대 수량 정보 포함)
+      - [x] 상품 비활성화: 장바구니 조회 시 자동 필터링 (이미 구현), 에러 시 Toast 알림
+      - [x] 네트워크 에러: Toast 메시지로 개선
+      - [x] 동시성 문제: UPSERT 로직 확인 (이미 구현됨)
+  - [x] 3.11 UX 개선
+    - [x] Toast 알림 시스템 설치 및 설정 (sonner)
+    - [x] alert() → Toast로 교체 (product-detail-cart.tsx, cart-item.tsx)
+    - [x] 로딩 상태 표시 (버튼 disabled, 로딩 텍스트) - 이미 구현됨
+    - [x] 성공/실패 피드백 (Toast 메시지)
+      - [x] 장바구니 추가 성공: Dialog 유지 + Toast 추가 가능
+      - [x] 수량 변경 성공: Toast 메시지
+      - [x] 삭제 성공: Toast 메시지
+      - [x] 에러 발생: Toast 메시지 (에러 타입별 처리)
+    - [x] 접근성 개선 (ARIA 레이블 추가)
+      - [x] 수량 조절 버튼 aria-label
+      - [x] 입력 필드 aria-label
+      - [x] 장바구니 담기 버튼 aria-label
+      - [x] 삭제 버튼 aria-label (이미 구현됨)
+  - [x] 3.12 주문 생성 흐름 (주소/메모 입력 포함)
+    - [x] 타입 정의 (`types/order.ts` 신규 생성)
+      - [x] `ShippingAddress` 인터페이스 정의
+      - [x] `OrderFormData` 인터페이스 정의
+      - [x] `Order`, `OrderItem` 타입 정의
+    - [x] Zod 스키마 정의 (`lib/validations/order.ts` 신규 생성)
+      - [x] `shippingAddressSchema`: 배송지 정보 검증
+      - [x] `orderFormSchema`: 전체 주문 폼 검증
+    - [x] 주문 페이지 (`app/order/page.tsx` 신규 생성)
+      - [x] Server Component로 구현
+      - [x] 비로그인 사용자 리다이렉트
+      - [x] 장바구니 아이템 조회 (`getCartItems`)
+      - [x] 장바구니 요약 정보 조회 (`getCartSummary`)
+      - [x] 빈 장바구니 처리 (리다이렉트)
+      - [x] 로딩 스켈레톤 UI (`app/order/loading.tsx`)
+    - [x] 주문 정보 입력 폼 (`components/order-form.tsx` 신규 생성)
+      - [x] Client Component로 구현
+      - [x] react-hook-form + Zod를 사용한 폼 검증
+      - [x] 배송지 정보 입력 필드 (이름, 연락처, 주소)
+      - [x] 주문 메모 입력 (선택사항, textarea)
+    - [x] 주문 요약 컴포넌트 (`components/order-summary.tsx` 신규 생성)
+      - [x] 장바구니 아이템 목록 표시 (이미지, 이름, 수량, 가격)
+      - [x] 총 상품 금액, 배송비, 총 주문 금액 표시
+      - [x] 반응형 레이아웃
+    - [x] CartSummary 컴포넌트 업데이트
+      - [x] 주문하기 버튼 클릭 시 `/order`로 리다이렉트
+  - [x] 3.13 주문테이블 저장 (`orders`, `order_items`) 및 합계 검증
+    - [x] Server Action (`actions/order.ts` 신규 생성)
+      - [x] `createOrderAction(orderData)`: 주문 생성
+      - [x] 장바구니 아이템 → `order_items` 변환 및 저장
+      - [x] 총 주문 금액 계산 및 검증
+      - [x] `orders` 테이블에 주문 정보 저장
+      - [x] 주문 생성 후 장바구니 비우기 (`clearCart`)
+    - [x] 순차 처리 및 에러 처리 (Supabase는 자동 커밋이므로 순차 처리로 구현)
+    - [x] 합계 검증 (장바구니 총액과 주문 총액 일치 확인)
 
-- [ ] Phase 4: 결제 통합 (Toss Payments 테스트 모드)
-  - [ ] 결제위젯 연동 및 클라이언트 플로우 구축
-  - [ ] 결제 성공/실패 콜백 처리
-  - [ ] 결제 완료 후 주문 상태 업데이트(`orders.status`)
+- [x] Phase 4: 결제 통합 (Toss Payments 테스트 모드) - **SDK v1 설치 및 연동 완료**
+  - [x] Toss Payments SDK v1 설치 (@tosspayments/payment-sdk)
+  - [x] 주문 생성 후 결제창 열기 플로우 구현 (OrderForm에 토스페이먼츠 결제창 연동)
+    - [x] OrderForm에 loadTossPayments 초기화 및 결제창 호출 로직 추가
+    - [x] 주문명 자동 생성 로직 추가 (장바구니 아이템 기반)
+    - [x] 장바구니 → 주문 페이지 → 배송지 입력 → 주문 저장 → 결제창 흐름 완성
+  - [x] 결제 성공/실패 콜백 페이지 구현 (app/payment/success, fail)
+  - [ ] 결제 완료 후 주문 상태 업데이트(`orders.status = 'confirmed'`)
 
 - [ ] Phase 5: 마이페이지
   - [ ] 주문 내역 목록 조회 (사용자별 `orders`)
